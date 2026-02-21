@@ -3,221 +3,341 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Video Hacker Pro</title>
+    <title>YT Chat Hacker</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-        
-        :root { font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: #0a0a0c; color: #f4f4f5; height: 100dvh; overflow: hidden; }
-
-        .glass-panel {
-            background: rgba(23, 23, 27, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        /* Custom Glassmorphism Styles & Utilities */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #000000 100%);
+            color: white;
+            height: 100vh;
+            height: 100dvh; /* Mobile browser support */
+            overflow: hidden;
         }
-
-        .chat-bubble-ai {
+        
+        .glass {
             background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px 20px 20px 4px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
 
-        .chat-bubble-user {
-            background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
-            border-radius: 20px 20px 4px 20px;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+        .glass-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
         }
-
-        .loading-shimmer {
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-        }
-
-        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
         
-        /* Hide scrollbars but keep functionality */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass-input:focus {
+            background: rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.3);
+            outline: none;
+        }
+
+        /* Hide scrollbar for clean UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Spinner Animation */
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="flex flex-col">
 
-    <nav class="h-16 flex items-center justify-between px-6 glass-panel border-b border-white/5 z-30">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
-                <i data-lucide="terminal" class="w-5 h-5 text-white"></i>
-            </div>
-            <span class="font-extrabold tracking-tighter text-xl">YT<span class="text-red-500 underline decoration-2 underline-offset-4">HACKER</span></span>
-        </div>
-        <button onclick="openSettings()" class="p-2 rounded-full hover:bg-white/5 active:scale-90 transition-all">
-            <i data-lucide="settings-2" class="w-6 h-6 text-gray-400"></i>
+    <header class="glass flex justify-between items-center p-4 z-10 sticky top-0 rounded-b-2xl mx-2 mt-2">
+        <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400">
+            YT Chat Hacker
+        </h1>
+        <button onclick="toggleSettings()" class="p-2 rounded-full hover:bg-white/10 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            </svg>
         </button>
-    </nav>
+    </header>
 
-    <main class="flex-1 flex flex-col overflow-hidden relative">
-        
-        <div class="p-4 z-10">
-            <div class="glass-panel rounded-2xl p-2 flex items-center gap-2 shadow-2xl">
-                <input type="text" id="yt-url" placeholder="Paste YouTube Link..." 
-                    class="flex-1 bg-transparent border-none focus:outline-none text-sm px-3 py-2 text-white placeholder-gray-500">
-                <button onclick="hackVideo()" id="hack-btn" 
-                    class="bg-white text-black font-bold px-5 py-2 rounded-xl text-sm hover:bg-gray-200 active:scale-95 transition-all flex items-center gap-2">
-                    <i data-lucide="zap" class="w-4 h-4 fill-black"></i> Load
-                </button>
-            </div>
-        </div>
-
-        <div id="chat-container" class="flex-1 overflow-y-auto px-4 pb-32 space-y-6 no-scrollbar">
-            <div class="mt-4 text-center">
-                <span class="text-[10px] uppercase tracking-widest text-gray-600 font-bold border border-gray-800 px-3 py-1 rounded-full">Encrypted Session</span>
-            </div>
-            </div>
-
-        <div class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/90 to-transparent">
-            <div class="glass-panel rounded-2xl p-2 flex items-end gap-2 max-w-4xl mx-auto border border-white/10">
-                <textarea id="chat-input" rows="1" oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"
-                    placeholder="Ask about the video..." 
-                    class="flex-1 bg-transparent border-none focus:outline-none text-sm px-3 py-3 max-h-32 no-scrollbar"></textarea>
-                <button onclick="askAI()" id="send-btn" class="bg-red-600 p-3 rounded-xl hover:bg-red-500 active:scale-90 transition-all shadow-lg">
-                    <i data-lucide="arrow-up" class="w-6 h-6 text-white"></i>
-                </button>
-            </div>
-        </div>
-    </main>
-
-    <div id="settings-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden">
-        <div class="glass-panel w-full max-w-md rounded-t-[32px] sm:rounded-[32px] p-8 shadow-2xl transform transition-transform translate-y-full" id="modal-content">
-            <div class="w-12 h-1.5 bg-gray-700 rounded-full mx-auto mb-8 sm:hidden"></div>
-            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-                <i data-lucide="cpu" class="text-red-500"></i> Core Config
-            </h2>
-            
-            <div class="space-y-6">
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">OpenRouter API Key</label>
-                    <input type="password" id="api-key" placeholder="sk-or-..." 
-                        class="w-full bg-black/40 border border-white/10 rounded-xl p-4 focus:border-red-500 focus:outline-none transition-all">
-                </div>
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Model Identifier</label>
-                    <input type="text" id="model-id" placeholder="e.g., deepseek/deepseek-r1:free" 
-                        class="w-full bg-black/40 border border-white/10 rounded-xl p-4 focus:border-red-500 focus:outline-none transition-all">
-                </div>
-                <button onclick="closeSettings()" class="w-full bg-white text-black font-extrabold py-4 rounded-2xl shadow-xl active:scale-95 transition-all mt-4">
-                    SAVE CHANGES
-                </button>
+    <div class="px-4 mt-4 flex-shrink-0">
+        <div class="glass p-3 rounded-xl flex flex-col gap-3">
+            <input type="text" id="yt-url" placeholder="Paste YouTube URL here..." class="glass-input w-full p-3 rounded-lg text-sm">
+            <button id="load-btn" onclick="loadVideo()" class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-medium p-3 rounded-lg transition flex justify-center items-center gap-2">
+                <span id="load-text">Load Video</span>
+                <svg id="load-spinner" class="spinner w-5 h-5 hidden" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </button>
+            <div id="video-status" class="text-xs text-center text-gray-400 hidden">
+                <span class="inline-block w-2 h-2 bg-green-500 rounded-full mr-1"></span> Transcript loaded successfully!
             </div>
         </div>
     </div>
 
-    <script>
-        let videoContext = "";
-        lucide.createIcons();
+    <main id="chat-container" class="flex-1 overflow-y-auto no-scrollbar p-4 flex flex-col gap-4 mt-2 mb-20">
+        <div class="flex flex-col items-start">
+            <div class="glass p-4 rounded-2xl rounded-tl-sm max-w-[85%] text-sm text-gray-200">
+                Hello! Paste a YouTube URL above, load it, and ask me anything about the video!
+            </div>
+        </div>
+    </main>
 
-        // Load Persisted Data
+    <div class="fixed bottom-0 left-0 w-full p-4 glass rounded-t-2xl z-10 pb-6">
+        <form onsubmit="handleChatSubmit(event)" class="flex gap-2 items-end relative">
+            <textarea id="chat-input" rows="1" placeholder="Ask about the video..." class="glass-input flex-1 p-3 rounded-xl text-sm resize-none no-scrollbar max-h-24"></textarea>
+            <button type="submit" id="send-btn" class="bg-blue-600 p-3 rounded-xl flex-shrink-0 hover:bg-blue-500 transition disabled:opacity-50 flex justify-center items-center h-[46px] w-[46px]">
+                <svg id="send-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                    <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />
+                </svg>
+                <svg id="send-spinner" class="spinner w-5 h-5 hidden" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </button>
+        </form>
+    </div>
+
+    <div id="settings-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="glass w-full max-w-sm rounded-2xl p-6 flex flex-col gap-5 transform scale-95 transition-transform duration-300" id="settings-content">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-semibold">Settings</h2>
+                <button onclick="toggleSettings()" class="text-gray-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label class="text-xs text-gray-400 font-medium">OpenRouter API Key</label>
+                <input type="password" id="api-key" placeholder="sk-or-v1-..." class="glass-input w-full p-3 rounded-lg text-sm">
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label class="text-xs text-gray-400 font-medium">Model Name</label>
+                <input type="text" id="model-name" placeholder="e.g., google/gemini-2.5-flash" class="glass-input w-full p-3 rounded-lg text-sm">
+                <p class="text-[10px] text-gray-400">Must match exactly as listed on OpenRouter.</p>
+            </div>
+
+            <button onclick="saveSettings()" class="bg-white text-black font-semibold p-3 rounded-lg hover:bg-gray-200 transition mt-2">
+                Save Settings
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // App State
+        let videoContext = "";
+        let chatHistory = [];
+
+        // DOM Elements
+        const chatInput = document.getElementById('chat-input');
+        const chatContainer = document.getElementById('chat-container');
+        const loadBtn = document.getElementById('load-btn');
+        const loadText = document.getElementById('load-text');
+        const loadSpinner = document.getElementById('load-spinner');
+        const videoStatus = document.getElementById('video-status');
+        const sendBtn = document.getElementById('send-btn');
+        const sendIcon = document.getElementById('send-icon');
+        const sendSpinner = document.getElementById('send-spinner');
+
+        // Init: Load Settings
         window.onload = () => {
-            document.getElementById('api-key').value = localStorage.getItem('hacker_key') || '';
-            document.getElementById('model-id').value = localStorage.getItem('hacker_model') || 'google/gemini-2.0-flash-001';
+            const savedKey = localStorage.getItem('or_api_key');
+            const savedModel = localStorage.getItem('or_model_name');
+            if(savedKey) document.getElementById('api-key').value = savedKey;
+            if(savedModel) document.getElementById('model-name').value = savedModel;
         };
 
-        function openSettings() {
-            const modal = document.getElementById('settings-modal');
-            const content = document.getElementById('modal-content');
-            modal.classList.remove('hidden');
-            setTimeout(() => content.classList.remove('translate-y-full'), 10);
-        }
+        // Auto-expand textarea
+        chatInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
 
-        function closeSettings() {
-            const content = document.getElementById('modal-content');
-            content.classList.add('translate-y-full');
-            localStorage.setItem('hacker_key', document.getElementById('api-key').value);
-            localStorage.setItem('hacker_model', document.getElementById('model-id').value);
-            setTimeout(() => document.getElementById('settings-modal').classList.add('hidden'), 300);
-        }
-
-        function addMessage(role, text) {
-            const container = document.getElementById('chat-container');
-            const wrapper = document.createElement('div');
-            wrapper.className = `flex w-full ${role === 'user' ? 'justify-end' : 'justify-start'}`;
-            
-            const msg = document.createElement('div');
-            msg.className = `max-w-[85%] px-5 py-4 text-sm leading-relaxed shadow-sm ${role === 'user' ? 'chat-bubble-user text-white' : 'chat-bubble-ai text-gray-200'}`;
-            msg.innerText = text;
-            
-            wrapper.appendChild(msg);
-            container.appendChild(wrapper);
-            container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
-        }
-
-        async function hackVideo() {
-            const url = document.getElementById('yt-url').value;
-            const btn = document.getElementById('hack-btn');
-            if(!url) return;
-
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Reading...`;
-            lucide.createIcons();
-            
-            try {
-                const response = await fetch(`https://r.jina.ai/${url}`);
-                if(!response.ok) throw new Error("Jina failed");
-                videoContext = await response.text();
-                addMessage('system', "VIDEO CONTENT EXTRACTED. THE AI IS NOW ANALYZING THE DATA...");
-                btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Ready`;
-                btn.classList.replace('bg-white', 'bg-green-600');
-                btn.classList.add('text-white');
-            } catch (err) {
-                addMessage('system', "ERR: FAILED TO EXTRACT TRANSCRIPT. TRY ANOTHER URL.");
-                btn.innerHTML = `Load`;
+        // Chat Enter Key Support
+        chatInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleChatSubmit(e);
             }
-            lucide.createIcons();
+        });
+
+        // Modal Logic
+        function toggleSettings() {
+            const modal = document.getElementById('settings-modal');
+            const content = document.getElementById('settings-content');
+            
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                // Trigger reflow for animation
+                void modal.offsetWidth;
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+            } else {
+                modal.classList.add('opacity-0');
+                content.classList.add('scale-95');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            }
         }
 
-        async function askAI() {
-            const input = document.getElementById('chat-input');
-            const text = input.value.trim();
-            const key = localStorage.getItem('hacker_key');
-            const model = localStorage.getItem('hacker_model');
+        function saveSettings() {
+            const key = document.getElementById('api-key').value.trim();
+            const model = document.getElementById('model-name').value.trim();
+            
+            if (!key || !model) {
+                alert("Please fill in both API Key and Model Name.");
+                return;
+            }
 
-            if(!text || !videoContext) return;
-            if(!key) return openSettings();
+            localStorage.setItem('or_api_key', key);
+            localStorage.setItem('or_model_name', model);
+            toggleSettings();
+        }
 
-            addMessage('user', text);
-            input.value = '';
-            input.style.height = 'auto';
+        // Fetch Transcript Logic
+        async function loadVideo() {
+            const urlInput = document.getElementById('yt-url').value.trim();
+            if (!urlInput) return alert("Please enter a YouTube URL.");
 
-            const sendBtn = document.getElementById('send-btn');
-            sendBtn.innerHTML = `<i data-lucide="loader-2" class="w-6 h-6 animate-spin"></i>`;
-            lucide.createIcons();
+            // UI Loading state
+            loadBtn.disabled = true;
+            loadText.innerText = "Fetching...";
+            loadSpinner.classList.remove('hidden');
+            videoStatus.classList.add('hidden');
+
+            try {
+                const jinaUrl = `https://r.jina.ai/${encodeURIComponent(urlInput)}`;
+                const response = await fetch(jinaUrl);
+                
+                if (!response.ok) throw new Error("Failed to fetch transcript.");
+                
+                const text = await response.text();
+                videoContext = text;
+                
+                // Success state
+                videoStatus.classList.remove('hidden');
+                chatHistory = []; // Reset history for new video
+            } catch (error) {
+                alert("Error: " + error.message);
+            } finally {
+                // UI Restore state
+                loadBtn.disabled = false;
+                loadText.innerText = "Load Video";
+                loadSpinner.classList.add('hidden');
+            }
+        }
+
+        // Chat Logic
+        async function handleChatSubmit(e) {
+            e.preventDefault();
+            const message = chatInput.value.trim();
+            const apiKey = localStorage.getItem('or_api_key');
+            const modelName = localStorage.getItem('or_model_name');
+
+            if (!message) return;
+            if (!apiKey || !modelName) {
+                alert("Please configure OpenRouter settings first (gear icon).");
+                toggleSettings();
+                return;
+            }
+            if (!videoContext) {
+                alert("Please load a video first.");
+                return;
+            }
+
+            // Append User Message
+            appendMessage(message, 'user');
+            chatInput.value = '';
+            chatInput.style.height = 'auto'; // reset height
+
+            // UI Loading state
+            sendBtn.disabled = true;
+            sendIcon.classList.add('hidden');
+            sendSpinner.classList.remove('hidden');
+
+            // Build payload
+            const messagesPayload = [
+                { 
+                    role: "system", 
+                    content: `You are a highly helpful assistant. You have been provided with the transcript/context of a YouTube video below. Use it to answer the user's questions accurately.\n\n--- VIDEO CONTEXT ---\n${videoContext}` 
+                },
+                ...chatHistory,
+                { role: "user", content: message }
+            ];
 
             try {
                 const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: "POST",
                     headers: {
-                        "Authorization": `Bearer ${key}`,
+                        "Authorization": `Bearer ${apiKey}`,
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        "model": model,
-                        "messages": [
-                            {"role": "system", "content": `You are a video intelligence AI. Use this transcript to answer questions: ${videoContext.slice(0, 20000)}`},
-                            {"role": "user", "content": text}
-                        ]
+                        model: modelName,
+                        messages: messagesPayload
                     })
                 });
 
                 const data = await response.json();
-                const reply = data.choices[0]?.message?.content || "The AI returned an empty response. Check your API quota.";
-                addMessage('ai', reply);
-            } catch (err) {
-                addMessage('ai', "SYSTEM ERROR: FAILED TO REACH OPENROUTER.");
+                
+                if (data.error) {
+                    throw new Error(data.error.message || "OpenRouter API Error");
+                }
+
+                const aiReply = data.choices[0].message.content;
+                
+                // Update history
+                chatHistory.push({ role: "user", content: message });
+                chatHistory.push({ role: "assistant", content: aiReply });
+
+                // Append AI Message
+                appendMessage(aiReply, 'ai');
+
+            } catch (error) {
+                appendMessage(`Error: ${error.message}`, 'ai', true);
             } finally {
-                sendBtn.innerHTML = `<i data-lucide="arrow-up" class="w-6 h-6"></i>`;
-                lucide.createIcons();
+                sendBtn.disabled = false;
+                sendIcon.classList.remove('hidden');
+                sendSpinner.classList.add('hidden');
             }
+        }
+
+        function appendMessage(text, sender, isError = false) {
+            const div = document.createElement('div');
+            div.className = "flex flex-col mb-4 w-full " + (sender === 'user' ? "items-end" : "items-start");
+            
+            const bubble = document.createElement('div');
+            
+            if (sender === 'user') {
+                bubble.className = "bg-blue-600 text-white p-3 rounded-2xl rounded-tr-sm max-w-[85%] text-sm shadow-md";
+            } else {
+                bubble.className = `glass p-4 rounded-2xl rounded-tl-sm max-w-[85%] text-sm ${isError ? 'text-red-400 border-red-500/30' : 'text-gray-200'}`;
+            }
+            
+            // Basic Markdown to HTML handling for line breaks
+            bubble.innerHTML = text.replace(/\n/g, '<br>');
+            
+            div.appendChild(bubble);
+            chatContainer.appendChild(div);
+            
+            // Smooth scroll to bottom
+            chatContainer.scrollTo({
+                top: chatContainer.scrollHeight,
+                behavior: 'smooth'
+            });
         }
     </script>
 </body>
