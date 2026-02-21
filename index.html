@@ -3,200 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YT Video Hacker</title>
+    <title>Video Hacker Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at top left, #1a1a2e, #16213e);
-            height: 100dvh;
-            overflow: hidden;
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        
+        :root { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: #0a0a0c; color: #f4f4f5; height: 100dvh; overflow: hidden; }
+
+        .glass-panel {
+            background: rgba(23, 23, 27, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .glass {
+
+        .chat-bubble-ai {
             background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px 20px 20px 4px;
         }
-        .chat-container::-webkit-scrollbar { width: 4px; }
-        .chat-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .loader { animation: spin 1s linear infinite; }
+
+        .chat-bubble-user {
+            background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
+            border-radius: 20px 20px 4px 20px;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .loading-shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        
+        /* Hide scrollbars but keep functionality */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="text-gray-100 flex flex-col">
+<body class="flex flex-col">
 
-    <header class="p-4 glass flex justify-between items-center z-10">
-        <div class="flex items-center gap-2">
-            <div class="bg-red-600 p-1.5 rounded-lg">
-                <i data-lucide="youtube" class="w-5 h-5 text-white"></i>
+    <nav class="h-16 flex items-center justify-between px-6 glass-panel border-b border-white/5 z-30">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
+                <i data-lucide="terminal" class="w-5 h-5 text-white"></i>
             </div>
-            <h1 class="font-bold tracking-tight text-lg">YT <span class="text-red-500">HACKER</span></h1>
+            <span class="font-extrabold tracking-tighter text-xl">YT<span class="text-red-500 underline decoration-2 underline-offset-4">HACKER</span></span>
         </div>
-        <button onclick="toggleModal('settings-modal')" class="p-2 hover:bg-white/10 rounded-full transition">
-            <i data-lucide="settings" class="w-6 h-6"></i>
+        <button onclick="openSettings()" class="p-2 rounded-full hover:bg-white/5 active:scale-90 transition-all">
+            <i data-lucide="settings-2" class="w-6 h-6 text-gray-400"></i>
         </button>
-    </header>
+    </nav>
 
-    <main class="flex-1 flex flex-col p-4 gap-4 overflow-hidden relative">
+    <main class="flex-1 flex flex-col overflow-hidden relative">
         
-        <div class="glass rounded-2xl p-3 flex gap-2">
-            <input type="text" id="yt-url" placeholder="Paste YouTube URL..." 
-                class="flex-1 bg-transparent border-none focus:ring-0 text-sm px-2">
-            <button onclick="fetchTranscript()" id="load-btn"
-                class="bg-white text-black px-4 py-2 rounded-xl text-sm font-bold active:scale-95 transition">
-                Load Video
-            </button>
-        </div>
-
-        <div id="chat-box" class="flex-1 overflow-y-auto chat-container flex flex-col gap-4 p-2">
-            <div class="bg-white/5 border border-white/10 self-start p-3 rounded-2xl rounded-tl-none max-w-[85%] text-sm">
-                Paste a YouTube link above to begin the "extraction."
+        <div class="p-4 z-10">
+            <div class="glass-panel rounded-2xl p-2 flex items-center gap-2 shadow-2xl">
+                <input type="text" id="yt-url" placeholder="Paste YouTube Link..." 
+                    class="flex-1 bg-transparent border-none focus:outline-none text-sm px-3 py-2 text-white placeholder-gray-500">
+                <button onclick="hackVideo()" id="hack-btn" 
+                    class="bg-white text-black font-bold px-5 py-2 rounded-xl text-sm hover:bg-gray-200 active:scale-95 transition-all flex items-center gap-2">
+                    <i data-lucide="zap" class="w-4 h-4 fill-black"></i> Load
+                </button>
             </div>
         </div>
 
-        <div id="global-loader" class="hidden absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-20">
-            <i data-lucide="loader-2" class="w-10 h-10 text-white loader"></i>
-        </div>
+        <div id="chat-container" class="flex-1 overflow-y-auto px-4 pb-32 space-y-6 no-scrollbar">
+            <div class="mt-4 text-center">
+                <span class="text-[10px] uppercase tracking-widest text-gray-600 font-bold border border-gray-800 px-3 py-1 rounded-full">Encrypted Session</span>
+            </div>
+            </div>
 
-        <div class="mt-auto pb-4">
-            <div class="glass rounded-2xl p-2 flex items-center gap-2">
-                <textarea id="user-input" rows="1" placeholder="Ask anything about the video..." 
-                    class="flex-1 bg-transparent border-none focus:ring-0 text-sm px-3 resize-none py-2"></textarea>
-                <button onclick="sendMessage()" class="p-3 bg-red-600 rounded-xl text-white active:scale-95 transition">
-                    <i data-lucide="send" class="w-5 h-5"></i>
+        <div class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/90 to-transparent">
+            <div class="glass-panel rounded-2xl p-2 flex items-end gap-2 max-w-4xl mx-auto border border-white/10">
+                <textarea id="chat-input" rows="1" oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"
+                    placeholder="Ask about the video..." 
+                    class="flex-1 bg-transparent border-none focus:outline-none text-sm px-3 py-3 max-h-32 no-scrollbar"></textarea>
+                <button onclick="askAI()" id="send-btn" class="bg-red-600 p-3 rounded-xl hover:bg-red-500 active:scale-90 transition-all shadow-lg">
+                    <i data-lucide="arrow-up" class="w-6 h-6 text-white"></i>
                 </button>
             </div>
         </div>
     </main>
 
-    <div id="settings-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md">
-        <div class="glass w-full max-w-sm rounded-3xl p-6 flex flex-col gap-5">
-            <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold">Config</h2>
-                <button onclick="toggleModal('settings-modal')"><i data-lucide="x"></i></button>
-            </div>
+    <div id="settings-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden">
+        <div class="glass-panel w-full max-w-md rounded-t-[32px] sm:rounded-[32px] p-8 shadow-2xl transform transition-transform translate-y-full" id="modal-content">
+            <div class="w-12 h-1.5 bg-gray-700 rounded-full mx-auto mb-8 sm:hidden"></div>
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <i data-lucide="cpu" class="text-red-500"></i> Core Config
+            </h2>
             
-            <div class="space-y-4">
-                <div>
-                    <label class="text-xs uppercase tracking-widest text-gray-400 font-bold">OpenRouter Key</label>
-                    <input type="password" id="api-key" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 mt-1 focus:border-red-500 outline-none transition">
+            <div class="space-y-6">
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">OpenRouter API Key</label>
+                    <input type="password" id="api-key" placeholder="sk-or-..." 
+                        class="w-full bg-black/40 border border-white/10 rounded-xl p-4 focus:border-red-500 focus:outline-none transition-all">
                 </div>
-                <div>
-                    <label class="text-xs uppercase tracking-widest text-gray-400 font-bold">Model ID</label>
-                    <input type="text" id="model-name" placeholder="e.g. google/gemini-2.0-flash-001" 
-                        class="w-full bg-white/5 border border-white/10 rounded-xl p-3 mt-1 focus:border-red-500 outline-none transition">
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Model Identifier</label>
+                    <input type="text" id="model-id" placeholder="e.g., deepseek/deepseek-r1:free" 
+                        class="w-full bg-black/40 border border-white/10 rounded-xl p-4 focus:border-red-500 focus:outline-none transition-all">
                 </div>
+                <button onclick="closeSettings()" class="w-full bg-white text-black font-extrabold py-4 rounded-2xl shadow-xl active:scale-95 transition-all mt-4">
+                    SAVE CHANGES
+                </button>
             </div>
-
-            <button onclick="saveSettings()" class="w-full bg-white text-black font-bold py-4 rounded-2xl active:scale-95 transition">
-                Save Configuration
-            </button>
         </div>
     </div>
 
     <script>
         let videoContext = "";
-
-        // Init Lucide Icons
         lucide.createIcons();
 
-        // Load Settings from LocalStorage
+        // Load Persisted Data
         window.onload = () => {
-            document.getElementById('api-key').value = localStorage.getItem('or_key') || '';
-            document.getElementById('model-name').value = localStorage.getItem('or_model') || 'google/gemini-2.0-flash-001';
+            document.getElementById('api-key').value = localStorage.getItem('hacker_key') || '';
+            document.getElementById('model-id').value = localStorage.getItem('hacker_model') || 'google/gemini-2.0-flash-001';
         };
 
-        function toggleModal(id) {
-            document.getElementById(id).classList.toggle('hidden');
+        function openSettings() {
+            const modal = document.getElementById('settings-modal');
+            const content = document.getElementById('modal-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => content.classList.remove('translate-y-full'), 10);
         }
 
-        function saveSettings() {
-            localStorage.setItem('or_key', document.getElementById('api-key').value);
-            localStorage.setItem('or_model', document.getElementById('model-name').value);
-            toggleModal('settings-modal');
+        function closeSettings() {
+            const content = document.getElementById('modal-content');
+            content.classList.add('translate-y-full');
+            localStorage.setItem('hacker_key', document.getElementById('api-key').value);
+            localStorage.setItem('hacker_model', document.getElementById('model-id').value);
+            setTimeout(() => document.getElementById('settings-modal').classList.add('hidden'), 300);
         }
 
-        async function fetchTranscript() {
-            const url = document.getElementById('yt-url').value;
-            if(!url) return alert("Paste a URL first!");
-
-            const loader = document.getElementById('global-loader');
-            loader.classList.remove('hidden');
-
-            try {
-                // The Jina Hack
-                const response = await fetch(`https://r.jina.ai/${url}`);
-                const text = await response.text();
-                videoContext = text;
-                
-                appendMessage('system', "✅ Video content indexed successfully. You can now start the interrogation.");
-            } catch (err) {
-                appendMessage('system', "❌ Failed to fetch content. Ensure Jina Reader is accessible.");
-            } finally {
-                loader.classList.add('hidden');
-            }
-        }
-
-        async function sendMessage() {
-            const inputField = document.getElementById('user-input');
-            const message = inputField.value.trim();
-            const apiKey = localStorage.getItem('or_key');
-            const model = localStorage.getItem('or_model');
-
-            if(!message) return;
-            if(!videoContext) return alert("Load a video first!");
-            if(!apiKey) return toggleModal('settings-modal');
-
-            appendMessage('user', message);
-            inputField.value = '';
+        function addMessage(role, text) {
+            const container = document.getElementById('chat-container');
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex w-full ${role === 'user' ? 'justify-end' : 'justify-start'}`;
             
-            const loader = document.getElementById('global-loader');
-            loader.classList.remove('hidden');
+            const msg = document.createElement('div');
+            msg.className = `max-w-[85%] px-5 py-4 text-sm leading-relaxed shadow-sm ${role === 'user' ? 'chat-bubble-user text-white' : 'chat-bubble-ai text-gray-200'}`;
+            msg.innerText = text;
+            
+            wrapper.appendChild(msg);
+            container.appendChild(wrapper);
+            container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+        }
+
+        async function hackVideo() {
+            const url = document.getElementById('yt-url').value;
+            const btn = document.getElementById('hack-btn');
+            if(!url) return;
+
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Reading...`;
+            lucide.createIcons();
+            
+            try {
+                const response = await fetch(`https://r.jina.ai/${url}`);
+                if(!response.ok) throw new Error("Jina failed");
+                videoContext = await response.text();
+                addMessage('system', "VIDEO CONTENT EXTRACTED. THE AI IS NOW ANALYZING THE DATA...");
+                btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Ready`;
+                btn.classList.replace('bg-white', 'bg-green-600');
+                btn.classList.add('text-white');
+            } catch (err) {
+                addMessage('system', "ERR: FAILED TO EXTRACT TRANSCRIPT. TRY ANOTHER URL.");
+                btn.innerHTML = `Load`;
+            }
+            lucide.createIcons();
+        }
+
+        async function askAI() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            const key = localStorage.getItem('hacker_key');
+            const model = localStorage.getItem('hacker_model');
+
+            if(!text || !videoContext) return;
+            if(!key) return openSettings();
+
+            addMessage('user', text);
+            input.value = '';
+            input.style.height = 'auto';
+
+            const sendBtn = document.getElementById('send-btn');
+            sendBtn.innerHTML = `<i data-lucide="loader-2" class="w-6 h-6 animate-spin"></i>`;
+            lucide.createIcons();
 
             try {
                 const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: "POST",
                     headers: {
-                        "Authorization": `Bearer ${apiKey}`,
+                        "Authorization": `Bearer ${key}`,
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
                         "model": model,
                         "messages": [
-                            {"role": "system", "content": `You are an expert video analyst. Use this transcript to answer: ${videoContext.substring(0, 15000)}`},
-                            {"role": "user", "content": message}
+                            {"role": "system", "content": `You are a video intelligence AI. Use this transcript to answer questions: ${videoContext.slice(0, 20000)}`},
+                            {"role": "user", "content": text}
                         ]
                     })
                 });
 
                 const data = await response.json();
-                const aiResponse = data.choices[0].message.content;
-                appendMessage('ai', aiResponse);
+                const reply = data.choices[0]?.message?.content || "The AI returned an empty response. Check your API quota.";
+                addMessage('ai', reply);
             } catch (err) {
-                appendMessage('system', "❌ Error connecting to OpenRouter. Check your API key.");
+                addMessage('ai', "SYSTEM ERROR: FAILED TO REACH OPENROUTER.");
             } finally {
-                loader.classList.add('hidden');
+                sendBtn.innerHTML = `<i data-lucide="arrow-up" class="w-6 h-6"></i>`;
+                lucide.createIcons();
             }
-        }
-
-        function appendMessage(role, text) {
-            const chatBox = document.getElementById('chat-box');
-            const msgDiv = document.createElement('div');
-            
-            if(role === 'user') {
-                msgDiv.className = "bg-red-600 self-end p-3 rounded-2xl rounded-tr-none max-w-[85%] text-sm shadow-lg";
-            } else if(role === 'ai') {
-                msgDiv.className = "bg-white/10 border border-white/10 self-start p-3 rounded-2xl rounded-tl-none max-w-[85%] text-sm";
-            } else {
-                msgDiv.className = "text-center text-xs text-gray-500 my-2 italic w-full";
-            }
-
-            msgDiv.innerText = text;
-            chatBox.appendChild(msgDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
         }
     </script>
 </body>
